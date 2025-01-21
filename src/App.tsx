@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { useGoogleLogin } from "@react-oauth/google";
-import { Calendar, LogOut } from "lucide-react";
-import { motion } from "framer-motion";
+import { Calendar, LogOut, Grid, LayoutGrid } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Toaster, toast } from "react-hot-toast";
 import { DateFilter } from "./components/DateFilter";
 import { EventList } from "./components/EventList";
+import { TableView } from "./components/TableView";
+import { EventDetails } from "./components/EventDetails";
 import Logo from "./assets/Logo.png";
 import type { CalendarEvent } from "./types/calendar";
 
@@ -21,6 +23,10 @@ function App() {
   );
   const [searchTerm, setSearchTerm] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
+  const [viewMode, setViewMode] = useState<"table" | "card">("table");
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
+    null
+  );
 
   const login = useGoogleLogin({
     onSuccess: (tokenResponse) => {
@@ -69,9 +75,14 @@ function App() {
     }
   };
 
-  // Filter events based on search term and location
   useEffect(() => {
-    const filtered = events.filter((event) => {
+    const sorted = [...events].sort(
+      (a, b) =>
+        new Date(a.start.dateTime).getTime() -
+        new Date(b.start.dateTime).getTime()
+    );
+
+    const filtered = sorted.filter((event) => {
       const matchesSearch =
         searchTerm === "" ||
         event.summary?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -144,8 +155,9 @@ function App() {
             >
               <img
                 src={Logo}
-                className=" w-6 h-6 mr-4 bg-white p-0.5 rounded-full"
-              ></img>
+                className="w-6 h-6 mr-4 bg-white p-0.5 rounded-full"
+                alt="Google Logo"
+              />
               Sign in with Google
             </button>
           </motion.div>
@@ -158,7 +170,7 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
       <Toaster position="top-right" />
       <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-8 space-y-6 md:space-y-0">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
               Your Calendar Events
@@ -167,15 +179,37 @@ function App() {
               View and filter your upcoming events
             </p>
           </div>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleLogout}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-          >
-            <LogOut className="h-4 w-4 mr-2" />
-            Sign Out
-          </motion.button>
+          <div className="flex items-center space-x-4">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() =>
+                setViewMode(viewMode === "table" ? "card" : "table")
+              }
+              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-full shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              {viewMode === "table" ? (
+                <>
+                  <LayoutGrid className="h-4 w-4 mr-2" />
+                  Card View
+                </>
+              ) : (
+                <>
+                  <Grid className="h-4 w-4 mr-2" />
+                  Table View
+                </>
+              )}
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleLogout}
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
+            </motion.button>
+          </div>
         </div>
 
         <DateFilter
@@ -196,6 +230,21 @@ function App() {
             >
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500" />
             </motion.div>
+          ) : viewMode === "table" ? (
+            <>
+              <TableView
+                events={filteredEvents}
+                onEventClick={setSelectedEvent}
+              />
+              <AnimatePresence>
+                {selectedEvent && (
+                  <EventDetails
+                    event={selectedEvent}
+                    onClose={() => setSelectedEvent(null)}
+                  />
+                )}
+              </AnimatePresence>
+            </>
           ) : (
             <EventList events={filteredEvents} />
           )}
