@@ -2,8 +2,6 @@
 
 A beautiful and feature-rich calendar dashboard that allows you to view and manage your Google Calendar events with style.
 
-![Calendar Dashboard](https://images.unsplash.com/photo-1506784693919-ef06d93c28d2?auto=format&fit=crop&q=80&w=1000)
-
 ## Features
 
 - 🔐 Secure Google Calendar integration
