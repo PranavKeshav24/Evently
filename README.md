@@ -125,7 +125,7 @@ npm run preview
 
 ## Usage
 
-1. Sign in with your Google account.
+1. Sign in with your Google account. Click on Advanved and then Go to Evently if prompted with Google hasn’t verified this app dialog. 
 2. View your calendar events in either Table or Card view.
 3. Use the search bar to find specific events.
 4. Filter events by location.
