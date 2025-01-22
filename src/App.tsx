@@ -106,7 +106,7 @@ function App() {
 
   if (!accessToken) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center relative overflow-hidden">
+      <div className="h-screen px-4 md:px-0 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center relative overflow-hidden">
         {/* Particle Background */}
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 animate-gradient bg-gradient-to-r from-blue-300 via-purple-300 to-indigo-300 opacity-40 blur-xl"></div>
